@@ -1,4 +1,3 @@
 use inventory_db;
-select * from assets;
-
+select * from AssetAssignments;
 go
