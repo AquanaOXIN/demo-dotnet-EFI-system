@@ -5,8 +5,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add database contexts
+builder.Services.AddDbContext<InventoryDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryConnection")));
+
+builder.Services.AddDbContext<EmployeeDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("EmployeeConnection")));
+
+builder.Services.AddDbContext<FinanceDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("FinanceConnection")));
 
 var app = builder.Build();
 

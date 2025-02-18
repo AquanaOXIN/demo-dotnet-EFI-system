@@ -1,0 +1,42 @@
+@model IEnumerable<demo_EFI_app.Models.ViewModels.AssetAssignmentViewModel>
+
+@{
+    ViewData["Title"] = "Asset Assignments";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Asset Assignments</h2>
+        <form asp-action="ExportAssignments" method="post">
+            <button type="submit" class="btn btn-success">Export Report</button>
+        </form>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Asset ID</th>
+                <th>Serial Number</th>
+                <th>Location</th>
+                <th>Assignee</th>
+                <th>Assignment Date</th>
+                <th>Purchase Date</th>
+                <th>Purchase Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var assignment in Model)
+            {
+                <tr>
+                    <td>@assignment.AssetID</td>
+                    <td>@assignment.SerialNumber</td>
+                    <td>@assignment.LocationDescription</td>
+                    <td>@assignment.AssigneeName (ID: @assignment.EmployeeID)</td>
+                    <td>@assignment.AssignmentDate.ToShortDateString()</td>
+                    <td>@assignment.PurchaseDate.ToShortDateString()</td>
+                    <td>@assignment.PurchasePrice.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

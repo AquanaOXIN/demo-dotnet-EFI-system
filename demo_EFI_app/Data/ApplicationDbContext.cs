@@ -1,7 +1,7 @@
-// Data/ApplicationDbContext.cs
-using System;
 using Microsoft.EntityFrameworkCore;
 using demo_EFI_app.Models;
+using demo_EFI_app.Models.EmployeeDb;
+using demo_EFI_app.Models.FinanceDb;
 
 namespace demo_EFI_app.Data
 {
@@ -17,13 +17,22 @@ namespace demo_EFI_app.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure the Asset table
+            // Configure inventory_db tables
             modelBuilder.Entity<Asset>()
-                .ToTable("Assets");
+                .ToTable("Assets", "dbo");
 
-            // Configure the AssetAssignment table
             modelBuilder.Entity<AssetAssignment>()
-                .ToTable("AssetAssignments");
+                .ToTable("AssetAssignments", "dbo");
+
+            // Configure employee_db tables
+            modelBuilder.Entity<Employee>()
+                .ToTable("Employees", "dbo")
+                .HasKey(e => e.EmployeeID);
+
+            // Configure finance_db tables
+            modelBuilder.Entity<FinanceAsset>()
+                .ToTable("Assets", "dbo")
+                .HasKey(a => a.AssetID);
 
             // Configure relationships
             modelBuilder.Entity<AssetAssignment>()
@@ -31,22 +40,33 @@ namespace demo_EFI_app.Data
                 .WithMany(a => a.Assignments)
                 .HasForeignKey(aa => aa.AssetID);
 
-            // Ensure required string properties have max length
-            modelBuilder.Entity<Asset>()
-                .Property(a => a.SerialNumber)
-                .HasMaxLength(100);
+            // Configure string length constraints
+            modelBuilder.Entity<Asset>(entity =>
+            {
+                entity.Property(e => e.SerialNumber).HasMaxLength(100);
+                entity.Property(e => e.ModelNumber).HasMaxLength(100);
+                entity.Property(e => e.Manufacturer).HasMaxLength(100);
+                entity.Property(e => e.Notes).HasMaxLength(500);
+            });
 
-            modelBuilder.Entity<Asset>()
-                .Property(a => a.ModelNumber)
-                .HasMaxLength(100);
+            modelBuilder.Entity<AssetAssignment>(entity =>
+            {
+                entity.Property(e => e.LocationDescription).HasMaxLength(200);
+                entity.Property(e => e.AssignmentNotes).HasMaxLength(500);
+            });
+        }
 
-            modelBuilder.Entity<Asset>()
-                .Property(a => a.Manufacturer)
-                .HasMaxLength(100);
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                // Configure different database connections
+                var inventoryConnection = "Server=localhost;Database=inventory_db;Trusted_Connection=True;TrustServerCertificate=True";
+                var employeeConnection = "Server=localhost;Database=employee_db;Trusted_Connection=True;TrustServerCertificate=True";
+                var financeConnection = "Server=localhost;Database=finance_db;Trusted_Connection=True;TrustServerCertificate=True";
 
-            modelBuilder.Entity<AssetAssignment>()
-                .Property(aa => aa.LocationDescription)
-                .HasMaxLength(200);
+                optionsBuilder.UseSqlServer(inventoryConnection);
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-@model demo_EFI_app.Models.AssetAssignment
+@model demo_EFI_app.Models.ViewModels.AssetSearchViewModel
 
 @{
     ViewData["Title"] = "Asset Search";
@@ -14,34 +14,70 @@
         </div>
     </form>
 
-    @if (Model != null)
+    @if (Model?.CurrentAssignment != null)
     {
-        <div class="card">
+        <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">Asset Assignment Details</h5>
+                <h5 class="mb-0">Current Assignment</h5>
             </div>
             <div class="card-body">
                 <dl class="row">
                     <dt class="col-sm-3">Asset ID</dt>
-                    <dd class="col-sm-9">@Model.AssetID</dd>
+                    <dd class="col-sm-9">@Model.CurrentAssignment.AssetID</dd>
 
                     <dt class="col-sm-3">Serial Number</dt>
-                    <dd class="col-sm-9">@Model.Asset?.SerialNumber</dd>
+                    <dd class="col-sm-9">@Model.CurrentAssignment.Asset?.SerialNumber</dd>
 
                     <dt class="col-sm-3">Location</dt>
-                    <dd class="col-sm-9">@Model.LocationDescription</dd>
+                    <dd class="col-sm-9">@Model.CurrentAssignment.LocationDescription</dd>
 
                     <dt class="col-sm-3">Assignment Date</dt>
-                    <dd class="col-sm-9">@Model.AssignmentDate.ToShortDateString()</dd>
+                    <dd class="col-sm-9">@Model.CurrentAssignment.AssignmentDate.ToShortDateString()</dd>
 
                     <dt class="col-sm-3">Employee ID</dt>
-                    <dd class="col-sm-9">@Model.EmployeeID</dd>
+                    <dd class="col-sm-9">@Model.CurrentAssignment.EmployeeID</dd>
 
                     <dt class="col-sm-3">Notes</dt>
-                    <dd class="col-sm-9">@Model.AssignmentNotes</dd>
+                    <dd class="col-sm-9">@Model.CurrentAssignment.AssignmentNotes</dd>
                 </dl>
             </div>
         </div>
+
+        @if (Model.AssignmentHistory.Any())
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Assignment History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Assignment Date</th>
+                                    <th>Return Date</th>
+                                    <th>Location</th>
+                                    <th>Employee</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var assignment in Model.AssignmentHistory)
+                                {
+                                    <tr>
+                                        <td>@assignment.AssignmentDate.ToShortDateString()</td>
+                                        <td>@(assignment.ReturnDate?.ToShortDateString() ?? "Current")</td>
+                                        <td>@assignment.LocationDescription</td>
+                                        <td>@assignment.EmployeeName (ID: @assignment.EmployeeID)</td>
+                                        <td>@assignment.AssignmentNotes</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
     }
     else if (Context.Request.Query.ContainsKey("assetId"))
     {

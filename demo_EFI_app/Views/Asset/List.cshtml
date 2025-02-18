@@ -1,0 +1,42 @@
+@model IEnumerable<demo_EFI_app.Models.ViewModels.AssetViewModel>
+
+@{
+    ViewData["Title"] = "Asset List";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Asset List</h2>
+        <form asp-action="ExportAssets" method="post">
+            <button type="submit" class="btn btn-success">Export Report</button>
+        </form>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Asset ID</th>
+                <th>Serial Number</th>
+                <th>Model Number</th>
+                <th>Manufacturer</th>
+                <th>Status</th>
+                <th>Created Date</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var asset in Model)
+            {
+                <tr>
+                    <td>@asset.AssetID</td>
+                    <td>@asset.SerialNumber</td>
+                    <td>@asset.ModelNumber</td>
+                    <td>@asset.Manufacturer</td>
+                    <td>@asset.StatusName</td>
+                    <td>@asset.CreatedDate.ToShortDateString()</td>
+                    <td>@asset.Notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
